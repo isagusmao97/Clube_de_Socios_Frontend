@@ -1,0 +1,155 @@
+body {
+      background-color: #fffbf2;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .window {
+      background-color: #fff;
+      border: 2px solid #222;
+      width: 80%;
+      max-width: 850px;
+      margin: 0 auto;
+      box-shadow: 4px 4px 0 #000;
+    }
+
+    .title-bar {
+      background-color: #ee96ad;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #222;
+    }
+
+    .window-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .btn.red { background-color: #fffbf2; }
+    .btn.yellow { background-color: #fffbf2; }
+    .btn.green { background-color: #fffbf2; }
+
+    .content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
+    }
+
+    .folder {
+      width: 120px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .folder img {
+      width: 100%;
+      max-width: 80px;
+    }
+
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      border: 2px solid #222;
+      padding: 0; /* Removido do container geral */
+      display: none;
+      z-index: 10;
+      box-shadow: 6px 6px 0 #000;
+      width: 90%;
+      max-width: 850px;
+      max-height: 80vh; /* Usar altura relativa à tela */
+      overflow: hidden; /* Evita estourar o container */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .popup-content {
+      margin-top: 0;
+      gap: 10px;
+      font-size: 14px;
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1; /* Ocupa o restante do espaço da popup */
+    }
+
+
+    .popup-bar {
+      background-color: #b5bbdf;
+      padding: 5px;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #222;
+      font-weight: bold;
+    }
+
+    form input,
+    form select,
+    form textarea,
+    form button {
+      margin-bottom: 8px; /* espaçamento sutil entre os campos */
+    }
+
+
+    .form-group {
+      margin-bottom: 10px;
+      
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+    }
+
+  .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 5px;
+      font-family: 'Courier New', monospace;
+      border: 1px solid #aaa;
+      background-color: #f2f2f2;
+    }
+
+  .submit-btn {
+      margin-top: 10px;
+      background-color: #e0bed7;
+      color: #222;
+      font-weight: bold;
+      padding: 8px 16px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #000;
+    }
+
+  .scroll-container {
+  max-height: 300px; /* ajuste conforme necessário */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eee;
+}
+
