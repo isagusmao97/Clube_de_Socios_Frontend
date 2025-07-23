@@ -16,9 +16,11 @@ function openSection(section) {
   popup.style.display = "block";
 }
 
-function closePopup() {
+function fecharPopup() {
   document.getElementById("popup").style.display = "none";
 }
+
+
 
 //funções para carregar listagem de sócios, para criar um sócio, editar e excluir e realizar pesquisa de um sócio pelo nome
 
@@ -153,49 +155,53 @@ async function createSocio(e) {
   openSection("socio");
 }
 
-async function editSocio(id) {
-  const res = await fetch(`${API}/socios/${id}`);
-  if (!res.ok) {
-    alert("Sócio não encontrado.");
-    return;
+
+// editar sócios
+async function updateSocio(event, id) {
+  event.preventDefault(); // Impede recarregamento da página
+
+  const form = event.target;
+  const erro = document.getElementById("erro-edicao-socio");
+
+  // Tratamento do campo sexo
+  const sexoOriginal = form.sexo.value;
+  const sexoFormatado = sexoOriginal === "Masculino" ? "M" :
+                        sexoOriginal === "Feminino" ? "F" :
+                        "O"; // ou null se quiser deixar vazio
+
+  const socioAtualizado = {
+    nome: form.nome.value.trim(),
+    cpf: form.cpf.value.trim(),
+    numero_associacao: Number(form.numero_associacao.value),
+    data_nascimento: form.data_nascimento.value,
+    sexo: sexoFormatado,
+    endereco: form.endereco.value.trim(),
+    mes_ingresso: Number(form.mes_ingresso.value),
+    ano_ingresso: Number(form.ano_ingresso.value),
+    ocupacao_id: Number(form.ocupacao_id.value)
+  };
+
+  try {
+    const res = await fetch(`${API}/socios/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(socioAtualizado)
+    });
+
+    if (!res.ok) {
+      const { erro: msg } = await res.json();
+      erro.textContent = msg || "Erro ao atualizar o sócio.";
+      return;
+    }
+
+    alert("Dados atualizados com sucesso!");
+    fecharPopup(); // ou função que recarrega a lista
+  } catch (err) {
+    console.error("Erro na edição:", err);
+    erro.textContent = "Erro interno ao enviar os dados.";
   }
-
-  const socio = await res.json();
-  const content = document.getElementById("popup-content");
-
-  content.innerHTML = `
-    <h3>Editar Sócio</h3>
-    <form onsubmit="updateSocio(event, ${id})">
-      <input name="nome" value="${socio.nome}" required>
-      <input name="cpf" value="${socio.cpf}" required>
-      <input name="numero_associacao" value="${socio.numero_associacao}" required>
-      <input name="data_nascimento" value="${socio.data_nascimento}" type="date" required>
-      <label for="sexo">Sexo:</label>
-      <select name="sexo" required>
-        <option value="">Selecione o sexo</option>
-        <option value="Masculino">Masculino</option>
-        <option value="Feminino">Feminino</option>
-        <option value="Outro">Outro</option>
-      </select>
-      <input name="endereco" value="${socio.endereco}" required>
-      <input name="mes_ingresso" value="${socio.mes_ingresso}" type="number" required>
-      <input name="ano_ingresso" value="${socio.ano_ingresso}" type="number" required>
-
-      <select name="ocupacao_id" required>
-        <option value="">Selecione...</option>
-        ${ocupacoes.map(o => `
-          <option value="${o.id}" ${socio.ocupacao_id === o.id ? "selected" : ""}>
-            ${o.titulo} — ${o.descricao} (${o.categoria})
-          </option>
-        `).join('')}
-      </select>
-
-      <button type="submit">Salvar Alterações</button>
-      <div id="erro-edicao-socio" style="color: red; margin-top: 8px;"></div>
-    </form>
-  `;
-  
 }
+
 
 window.editSocio = async function(id) {
   try {
@@ -407,6 +413,42 @@ async function createDependente(e) {
   }
 }
 
+async function updateDependente(event, id) {
+  event.preventDefault();
+
+  const form = event.target;
+  const erro = document.getElementById("erro-edicao-dependente");
+
+  const dependenteAtualizado = {
+    nome: form.nome.value.trim(),
+    data_nascimento: form.data_nascimento.value,
+    sexo: form.sexo.value.trim(),
+    grau_parentesco: form.grau_parentesco.value,
+    socio_id: Number(form.socio_id.value)
+  };
+
+  try {
+    const res = await fetch(`${API}/dependentes/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dependenteAtualizado)
+    });
+
+    if (!res.ok) {
+      const { erro: msg } = await res.json();
+      erro.textContent = msg || "Erro ao atualizar o dependente.";
+      return;
+    }
+
+    alert("Dependente atualizado com sucesso!");
+    fecharPopup(); // garante que o pop-up seja fechado após edição
+  } catch (err) {
+    console.error("Erro ao atualizar dependente:", err);
+    erro.textContent = "Erro interno ao enviar os dados.";
+  }
+}
+
+
 window.editDependente = async function(id) {
   try {
     // Busca os dados do dependente
@@ -486,32 +528,36 @@ function formatDate(dateString) {
 //funções para carregar listagem de pagamentos, para criar um pagamento, editar e excluir e realizar pesquisa de um pagamento por nome do sócio ou ano
 async function buscarPagamentos(e) {
   e.preventDefault();
+
   const form = e.target;
   const data = Object.fromEntries(new FormData(form));
   const params = new URLSearchParams(data);
   const container = document.getElementById("resultado-pagamentos");
 
+  // Limpa o container explicitamente
+  container.innerHTML = "";
+
   try {
     const res = await fetch(`${API}/pagamentos?${params}`);
     const pagamentos = await res.json();
 
-    container.innerHTML = `
-      <ul>
-        ${pagamentos.map(p => {
-          const valor = Number(p.valor_total) || 0;
-          return `
-            <li>
-              <strong>${p.nome_socio}</strong> — Ano: ${p.ano} — Valor: R$ ${valor.toFixed(2)} — Pago em: ${formatDate(p.data_pagamento)}
-            </li>
-          `;
-        }).join('')}
-      </ul>
-    `;
+    // Renderiza pagamentos novos, sem acumular
+    const htmlLista = pagamentos.map(p => {
+      const valor = Number(p.valor_total) || 0;
+      return `
+        <li>
+          <strong>${p.nome_socio}</strong> — Ano: ${p.ano} — Valor: R$ ${valor.toFixed(2)} — Pago em: ${formatDate(p.data_pagamento)}
+        </li>
+      `;
+    }).join('');
+
+    container.innerHTML = `<ul>${htmlLista}</ul>`;
   } catch (err) {
-    container.innerHTML = "Erro ao buscar pagamentos.";
     console.error("Erro:", err);
+    container.innerHTML = "Erro ao buscar pagamentos.";
   }
 }
+
 
 function renderPagamentoBusca(container) {
   container.innerHTML = `
@@ -531,38 +577,45 @@ async function loadPagamentos(container) {
     const res = await fetch(`${API}/pagamentos`);
     const pagamentos = await res.json();
 
+    // ✅ Proteção contra retorno não esperado
+    if (!Array.isArray(pagamentos)) {
+      console.warn("Tipo inesperado recebido do servidor:", pagamentos);
+      container.innerHTML = `<p>Não foi possível carregar os pagamentos.</p>`;
+      return;
+    }
+
+    // 💧 Limpa o container antes de renderizar
     container.innerHTML = `
-    <h3>Lista de Pagamentos</h3>
-    <button onclick="showPagamentoForm()">+ Novo Pagamento</button>
+      <h3>Lista de Pagamentos</h3>
+      <button onclick="showPagamentoForm()">+ Novo Pagamento</button>
 
-    <form onsubmit="buscarPagamentos(event)">
-      <input type="text" name="nome" placeholder="Nome do sócio">
-      <input type="number" name="ano" placeholder="Ano de referência">
-      <button type="submit">Buscar</button>
-    </form>
+      <form onsubmit="buscarPagamentos(event)">
+        <input type="text" name="nome" placeholder="Nome do sócio">
+        <input type="number" name="ano" placeholder="Ano de referência">
+        <button type="submit">Buscar</button>
+      </form>
 
-  <div id="resultado-pagamentos" class="scroll-container">
-    <ul class=""item-list"">
-      ${pagamentos.map(p => {
-        const valor = Number(p.valor_total) || 0;
-        return `
-          <li class="item">
-            <strong>${p.nome_socio}</strong> — Ano: ${p.ano} — Valor: R$ ${valor.toFixed(2)} — Pago em: ${formatDate(p.data_pagamento)}
-            <button onclick="editPagamento(${p.id})">Editar</button>
-            <button onclick="deletePagamento(${p.id})">Excluir</button>
-
-          </li>
-        `;
-      }).join('')}
-    </ul>
-  </div>
-`;
-
+      <div id="resultado-pagamentos" class="scroll-container">
+        <ul class="item-list">
+          ${pagamentos.map(p => {
+            const valor = Number(p.valor_total) || 0;
+            return `
+              <li class="item">
+                <strong>${p.nome_socio}</strong> — Ano: ${p.ano} — Valor: R$ ${valor.toFixed(2)} — Pago em: ${formatDate(p.data_pagamento)}
+                <button onclick="editPagamento(${p.id})">Editar</button>
+                <button onclick="deletePagamento(${p.id})">Excluir</button>
+              </li>
+            `;
+          }).join('')}
+        </ul>
+      </div>
+    `;
   } catch (err) {
-    container.innerHTML = "Erro ao carregar pagamentos.";
+    container.innerHTML = `<p>Erro ao carregar pagamentos.</p>`;
     console.error("Erro ao buscar pagamentos:", err);
   }
 }
+
 
 
 
@@ -695,7 +748,7 @@ async function updatePagamento(e, id) {
     }
 
     alert("Pagamento atualizado com sucesso.");
-    closePopup();
+    fecharPopup();
 
     // Atualiza a lista após edição
     const container = document.getElementById("resultado-pagamentos") || document.getElementById("pagamentos-container");
