@@ -577,14 +577,14 @@ async function loadPagamentos(container) {
     const res = await fetch(`${API}/pagamentos`);
     const pagamentos = await res.json();
 
-    // ✅ Proteção contra retorno não esperado
+    // Proteção contra retorno não esperado
     if (!Array.isArray(pagamentos)) {
       console.warn("Tipo inesperado recebido do servidor:", pagamentos);
       container.innerHTML = `<p>Não foi possível carregar os pagamentos.</p>`;
       return;
     }
 
-    // 💧 Limpa o container antes de renderizar
+    // Limpa o container antes de renderizar
     container.innerHTML = `
       <h3>Lista de Pagamentos</h3>
       <button onclick="showPagamentoForm()">+ Novo Pagamento</button>
@@ -639,7 +639,7 @@ window.showPagamentoForm = async function() {
       </select>
 
       <input name="ano" type="number" placeholder="Ano de Referência" required>
-      <input type="date" name="data_nascimento">
+      <input type="date" name="data_pagamento">
 
 
       <button type="submit">Salvar Pagamento</button>
@@ -652,10 +652,15 @@ window.showPagamentoForm = async function() {
 async function registrarPagamento(e) {
   e.preventDefault();
   const form = e.target;
-  const data = Object.fromEntries(new FormData(form));
   const erroDiv = document.getElementById("erro-pagamento");
   erroDiv.textContent = "";
-  
+
+  const data = {
+  socio_id: Number(form.socio_id.value),
+  ano: Number(form.ano.value),
+  data_pagamento: form.data_pagamento.value
+};
+
 
   try {
     const res = await fetch(`${API}/pagamentos`, {
@@ -666,8 +671,8 @@ async function registrarPagamento(e) {
 
     const json = await res.json();
 
-
     if (!res.ok) {
+      erroDiv.style.color = "red";
       erroDiv.textContent = json.erro || "Erro ao registrar pagamento.";
       return;
     }
@@ -675,9 +680,11 @@ async function registrarPagamento(e) {
     erroDiv.style.color = "green";
     erroDiv.textContent = `Pagamento registrado com sucesso. Valor: R$ ${Number(json.valor_total).toFixed(2)}`;
   } catch (err) {
+    console.error("Erro de conexão ao registrar pagamento:", err);
     erroDiv.textContent = "Erro de conexão.";
   }
 }
+
 
 window.editPagamento = async function(id) {
   try {
