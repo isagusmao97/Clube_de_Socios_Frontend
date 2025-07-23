@@ -15,7 +15,7 @@ body {
     }
 
     .title-bar {
-      background-color: #ee96ad;
+      background-color: #ffd1d3;
       padding: 10px;
       display: flex;
       justify-content: space-between;
@@ -88,7 +88,7 @@ body {
 
 
     .popup-bar {
-      background-color: #b5bbdf;
+      background-color: #b0e2e3;
       padding: 5px;
       display: flex;
       justify-content: space-between;

@@ -30,7 +30,7 @@ async function loadSocios(container) {
     const socios = await res.json();
 
     container.innerHTML = `
-      <h3>Lista de Sócios</h3>
+      <h3> 👤 Lista de Sócios</h3>
       <button onclick="showSocioForm()">+ Novo Sócio</button>
 
       <form onsubmit="buscarSocios(event)" style="margin-top: 16px;">
@@ -110,7 +110,7 @@ async function showSocioForm() {
     `).join('');
 
     content.innerHTML = `
-      <h3>Novo Sócio</h3>
+      <h3> 👤 Novo Sócio</h3>
       <form onsubmit="createSocio(event)">
         <input name="nome" placeholder="Nome" required>
         <input name="cpf" placeholder="CPF" required>
@@ -230,7 +230,7 @@ window.editSocio = async function(id) {
     // Renderiza o formulário
     const content = document.getElementById("popup-content");
     content.innerHTML = `
-      <h3>Editar Sócio</h3>
+      <h3> 👤 Editar Sócio</h3>
       <form onsubmit="updateSocio(event, ${id})">
         <input name="nome" value="${socio.nome}" required>
         <input name="cpf" value="${socio.cpf}" required>
@@ -280,7 +280,7 @@ async function loadDependentes(container) {
     const dependentes = await res.json();
 
     container.innerHTML = `
-      <h3>Dependentes</h3>
+      <h3> 👥 Dependentes</h3>
       <button onclick="showDependenteForm()">+ Novo Dependente</button>
 
       <form onsubmit="buscarDependentes(event)" style="margin-top: 16px;">
@@ -348,7 +348,7 @@ async function showDependenteForm() {
   const socios = await fetch(`${API}/socios`).then(r => r.json());
 
   content.innerHTML = `
-    <h3>Novo Dependente</h3>
+    <h3> 👥 Novo Dependente</h3>
     <form onsubmit="createDependente(event)">
       <select name="socio_id" required>
         <option value="">Selecione o sócio</option>
@@ -476,7 +476,7 @@ window.editDependente = async function(id) {
     // Renderiza o formulário de edição
     const content = document.getElementById("popup-content");
     content.innerHTML = `
-      <h3>Editar Dependente</h3>
+      <h3> 👥 Editar Dependente</h3>
       <form onsubmit="updateDependente(event, ${id})">
         <input name="nome" value="${dependente.nome}" required>
         <input name="data_nascimento" value="${formatDate(dependente.data_nascimento)}" type="date" required>
@@ -586,7 +586,7 @@ async function loadPagamentos(container) {
 
     // Limpa o container antes de renderizar
     container.innerHTML = `
-      <h3>Lista de Pagamentos</h3>
+      <h3> 💰 Lista de Pagamentos</h3>
       <button onclick="showPagamentoForm()">+ Novo Pagamento</button>
 
       <form onsubmit="buscarPagamentos(event)">
@@ -630,7 +630,7 @@ window.showPagamentoForm = async function() {
   `).join('');
 
   content.innerHTML = `
-    <h3>Registrar Pagamento</h3>
+    <h3> 💰 Registrar Pagamento</h3>
     <form onsubmit="registrarPagamento(event)">
       <label for="socio_id">Sócio:</label>
       <select name="socio_id" required>
@@ -712,7 +712,7 @@ window.editPagamento = async function(id) {
 
     const content = document.getElementById("popup-content");
     content.innerHTML = `
-      <h3>Editar Pagamento</h3>
+      <h3> 💰 Editar Pagamento</h3>
       <form onsubmit="updatePagamento(event, ${id})">
         <label for="socio_id">Sócio:</label>
         <select name="socio_id" required>
